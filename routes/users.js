@@ -3,6 +3,7 @@ const User = require("../models/User")
 const CryptoJS = require("crypto-js")
 const verify = require("../verifyToken")
 
+
 //UPDATE
 
 router.put("/:id", verify, async (req, res) => {
@@ -64,7 +65,11 @@ router.get("/", verify, async (req, res) => {
     if(req.user.isAdmin) {
         try {
             const users = query ? await User.find().sort({_id: -1}).limit(10) : await User.find()
-            res.status(200).json(users)
+            const newUsers = users.map(user => {
+                const { password, ...info } = user._doc
+                return {...info}
+            })
+            res.status(200).json(newUsers)
         } catch (err) {
             res.status(500).json(err)
         }
